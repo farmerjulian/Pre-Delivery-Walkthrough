@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Van Walkthrough — Ready Set Van</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display&display=swap');
+
+  :root {
+    --bg:        #F7F5F2;
+    --surface:   #FFFFFF;
+    --border:    #E4E0DA;
+    --border-md: #CCC8C0;
+    --text-1:    #1A1814;
+    --text-2:    #4A4640;
+    --text-3:    #8C8780;
+    --accent:    #C4622D;
+    --accent-bg: #FDF0EA;
+    --green:     #2E7D52;
+    --green-bg:  #EAF4EE;
+    --amber:     #A0600A;
+    --amber-bg:  #FEF3E2;
+    --blue:      #1D5FA6;
+    --blue-bg:   #EAF1FB;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Shell ── */
+  .shell {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 16px 80px;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+  .logo {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 18px;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+  }
+  .logo span { color: var(--accent); }
+  .header-tag {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── Welcome screen ── */
+  .welcome-hero {
+    padding: 36px 0 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .welcome-eyebrow {
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .welcome-title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(28px, 6vw, 40px);
+    line-height: 1.15;
+    color: var(--text-1);
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+  }
+  .welcome-sub {
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.7;
+    max-width: 500px;
+  }
+
+  .stop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 10px;
+    margin: 24px 0;
+  }
+  .stop-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    text-align: left;
+  }
+  .stop-tile:hover {
+    border-color: var(--border-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .stop-tile-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .stop-tile-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 3px;
+  }
+  .stop-tile-desc {
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.4;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 11px 22px;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .btn-primary:hover { background: #B0561F; }
+
+  /* ── Progress ── */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 0 0;
+    flex-wrap: wrap;
+  }
+  .prog-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .prog-dot.done { background: var(--green); }
+  .prog-dot.active { background: var(--text-1); }
+  .prog-label {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-left: 4px;
+  }
+
+  /* ── Stop header ── */
+  .stop-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 24px 0 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .stop-icon-wrap {
+    width: 44px;
+    height: 44px;
+    background: var(--accent-bg);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .stop-title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 22px;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+    margin-bottom: 5px;
+    line-height: 1.2;
+  }
+  .stop-intro {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .card-title .icon { font-size: 15px; }
+  .card-body {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+
+  /* ── Callouts ── */
+  .callout {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-size: 12px;
+    line-height: 1.55;
+    margin-top: 10px;
+  }
+  .callout .ci { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .callout.ok   { background: var(--green-bg); color: var(--green); }
+  .callout.tip  { background: var(--amber-bg); color: var(--amber); }
+  .callout.info { background: var(--blue-bg);  color: var(--blue);  }
+
+  /* ── Mode table ── */
+  .mode-table { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .mode-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .mode-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 20px;
+    min-width: 80px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .mp-on  { background: var(--green-bg); color: var(--green); }
+  .mp-co  { background: var(--blue-bg);  color: var(--blue);  }
+  .mp-off { background: #F0EFED;         color: var(--text-3); }
+  .mode-desc { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+
+  /* ── Location rows ── */
+  .loc-table { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .loc-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .loc-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-1);
+    min-width: 130px;
+    flex-shrink: 0;
+    line-height: 1.4;
+  }
+  .loc-desc { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+
+  /* ── Charging cards ── */
+  .charge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .charge-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+  }
+  .charge-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .charge-card-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+
+  /* ── Checklist ── */
+  .checklist { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .check-item .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border-md);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+  .check-item .check {
+    color: var(--green);
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Notion link ── */
+  .notion-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text-3);
+    text-decoration: none;
+    margin-top: 12px;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .notion-link:hover { color: var(--text-2); border-color: var(--border-md); }
+
+  /* ── Nav row ── */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+  }
+  .btn-back:hover { color: var(--text-2); }
+  .btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-1);
+    background: var(--surface);
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 9px 18px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-next:hover { background: var(--bg); border-color: var(--text-3); }
+
+  /* ── Finish card ── */
+  .finish-card {
+    background: var(--accent-bg);
+    border: 1px solid #F0C9B0;
+    border-radius: var(--radius-lg);
+    padding: 22px 20px;
+    margin-top: 20px;
+  }
+  .finish-title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 20px;
+    color: var(--text-1);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .finish-body {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .finish-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-1);
+    background: var(--surface);
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-secondary:hover { background: var(--bg); }
+
+  /* ── Support footer ── */
+  .support-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: 16px;
+  }
+  .support-note a { color: var(--text-3); text-decoration: underline; }
+
+  /* ── Responsive ── */
+  @media (max-width: 400px) {
+    .stop-grid { grid-template-columns: 1fr 1fr; }
+    .charge-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="site-header">
+    <div class="logo">Ready <span>Set</span> Van</div>
+    <div class="header-tag">Owner Walkthrough</div>
+  </header>
+
+  <!-- ════════════════════════════════ WELCOME ════════════════════════════════ -->
+  <div id="s-welcome" class="screen active">
+    <div class="welcome-hero">
+      <p class="welcome-eyebrow">Your delivery guide</p>
+      <h1 class="welcome-title">Welcome to your new van.</h1>
+      <p class="welcome-sub">This is the same walkthrough we do in person at delivery — designed to get you familiar with every system before you arrive. Go in order or jump to whatever you're curious about.</p>
+    </div>
+
+    <div class="stop-grid" style="margin-top:24px">
+      <button class="stop-tile" onclick="go('s-explore')">
+        <span class="stop-tile-icon">👋</span>
+        <div class="stop-tile-label">Get familiar</div>
+        <div class="stop-tile-desc">Touch everything first</div>
+      </button>
+      <button class="stop-tile" onclick="go('s-cab')">
+        <span class="stop-tile-icon">🚐</span>
+        <div class="stop-tile-label">Cab &amp; seats</div>
+        <div class="stop-tile-desc">Swivel seats &amp; cab overview</div>
+      </button>
+      <button class="stop-tile" onclick="go('s-charging')">
+        <span class="stop-tile-icon">⚡</span>
+        <div class="stop-tile-label">Charging</div>
+        <div class="stop-tile-desc">Solar, driving &amp; shore power</div>
+      </button>
+      <button class="stop-tile" onclick="go('s-interior')">
+        <span class="stop-tile-icon">🗄️</span>
+        <div class="stop-tile-label">Interior tour</div>
+        <div class="stop-tile-desc">Drawers, slides &amp; magnets</div>
+      </button>
+      <button class="stop-tile" onclick="go('s-controls')">
+        <span class="stop-tile-icon">🎛️</span>
+        <div class="stop-tile-label">Main controls</div>
+        <div class="stop-tile-desc">Heater, inverter &amp; Cerbo</div>
+      </button>
+      <button class="stop-tile" onclick="go('s-plumbing')">
+        <span class="stop-tile-icon">💧</span>
+        <div class="stop-tile-label">Plumbing</div>
+        <div class="stop-tile-desc">Water, pump &amp; grey tank</div>
+      </button>
+      <button class="stop-tile" onclick="go('s-electrical')">
+        <span class="stop-tile-icon">🔌</span>
+        <div class="stop-tile-label">Electrical cabinet</div>
+        <div class="stop-tile-desc">What's in there &amp; when to open it</div>
+      </button>
+      <button class="stop-tile" onclick="go('s-app')">
+        <span class="stop-tile-icon">📱</span>
+        <div class="stop-tile-label">Phone setup</div>
+        <div class="stop-tile-desc">Connect VictronConnect</div>
+      </button>
+    </div>
+
+    <button class="btn-primary" onclick="go('s-explore')">
+      Start walkthrough →
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════ GET FAMILIAR ════════════════════════════════ -->
+  <div id="s-explore" class="screen">
+    <div class="progress-bar" id="p-explore"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">👋</div>
+      <div>
+        <h2 class="stop-title">Get your hands on everything</h2>
+        <p class="stop-intro">Before we go over any systems, take a few minutes to just explore. Open every drawer, push every button, touch every surface. Getting your hands on it first makes everything that follows click faster.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">💡</span> Why we do this first</div>
+      <div class="card-body">Every van is hands-on by nature. The more comfortable you are with where things are and how they feel, the less you'll second-guess yourself on the road. There's nothing fragile here — open things, pull things, try things.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span> Things to find and touch</div>
+      <div class="card-body">
+        <div class="checklist">
+          <div class="check-item"><span class="dot"></span> All the drawers and cabinets — notice which ones push to open</div>
+          <div class="check-item"><span class="dot"></span> The main control panel area</div>
+          <div class="check-item"><span class="dot"></span> The switches inside the kitchen cabinet (behind the trash door)</div>
+          <div class="check-item"><span class="dot"></span> The plumbing cabinet near the rear</div>
+          <div class="check-item"><span class="dot"></span> The electrical cabinet</div>
+          <div class="check-item"><span class="dot"></span> The toilet, if your build includes one</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-welcome')">← Back</button>
+      <button class="btn-next" onclick="go('s-cab')">Cab &amp; seats →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ CAB ════════════════════════════════ -->
+  <div id="s-cab" class="screen">
+    <div class="progress-bar" id="p-cab"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">🚐</div>
+      <div>
+        <h2 class="stop-title">Cab of the van</h2>
+        <p class="stop-intro">The cab is mostly stock — we build on a variety of chassis and don't make many modifications inside the cab area itself. If your build includes swivel seats, here's what to know.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔄</span> Swivel seats (if equipped)</div>
+      <div class="card-body">
+        If your van came with the swivel seat option, the driver and/or passenger seat can rotate to face the living area. The swivel mechanism varies by seat — your in-person delivery walkthrough will show you exactly how yours releases and locks back into the driving position.
+        <div class="callout ok"><span class="ci">✓</span> Great for making camp — turn the cab into part of your living space when parked.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">ℹ️</span> Everything else in the cab</div>
+      <div class="card-body">The rest of the cab — dashboard, steering, and controls — is all stock from the factory. We leave that as-is. For questions about the vehicle itself, refer to the owner's manual in the glove box.</div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-explore')">← Get familiar</button>
+      <button class="btn-next" onclick="go('s-charging')">Charging →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ CHARGING ════════════════════════════════ -->
+  <div id="s-charging" class="screen">
+    <div class="progress-bar" id="p-charging"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">⚡</div>
+      <div>
+        <h2 class="stop-title">How your van charges</h2>
+        <p class="stop-intro">Your van keeps its battery topped up three different ways. Most of the time it all happens automatically — you just need to understand what each source does and when to lean on it.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔗</span> Three ways in, one battery bank</div>
+      <div class="card-body">
+        Think of the system as three input lanes all feeding into your battery bank. The battery then powers everything else in the van.
+        <div class="charge-grid">
+          <div class="charge-card">
+            <div class="charge-card-title">☀️ Solar</div>
+            <div class="charge-card-desc">Roof panels feed the Victron MPPT controller. Automatic, silent, runs all day in sunlight.</div>
+          </div>
+          <div class="charge-card">
+            <div class="charge-card-title">🚗 Alternator</div>
+            <div class="charge-card-desc">While driving, the Orion DC-DC charger tops up your house battery automatically.</div>
+          </div>
+          <div class="charge-card">
+            <div class="charge-card-title">🔌 Shore power</div>
+            <div class="charge-card-desc">Plug into a 30A campground pedestal or a standard home outlet. MultiPlus handles the rest.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">☀️</span> What to expect from solar</div>
+      <div class="card-body">
+        Solar is great for maintaining your battery during light everyday use. It's not designed to keep up with big draws like AC, a cooktop, or a microwave — for those you'll want to plug in or drive.
+        <div class="callout tip"><span class="ci">!</span> Winter solar output can drop 70–80% due to shorter days and lower sun angles. Plan to plug in more often in cold months.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🚗</span> Alternator charging while you drive</div>
+      <div class="card-body">
+        As soon as the engine is running, the Orion DC-DC charger starts routing alternator power to your house battery. You might notice a short ramp-up delay — that's normal. A couple hours of driving gives you meaningful charge recovery.
+        <div class="callout ok"><span class="ci">✓</span> Zero effort required — just drive and the battery takes care of itself.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔌</span> Shore power</div>
+      <div class="card-body">
+        The fastest and most reliable way to charge. Plug into a 30A campground pedestal or use the included adapter for a standard home outlet. The MultiPlus automatically charges the battery and powers your 120V outlets simultaneously.
+        <div class="callout info"><span class="ci">i</span> For charging to work: Battery Disconnect must be ON and inverter set to ON or Charger Only mode.</div>
+      </div>
+    </div>
+
+    <a class="notion-link" href="https://app.notion.com/p/3531bfd4f75d8047a880dca98e2e23f9" target="_blank">↗ Charging — full guide in Notion</a>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-cab')">← Cab &amp; seats</button>
+      <button class="btn-next" onclick="go('s-interior')">Interior tour →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ INTERIOR ════════════════════════════════ -->
+  <div id="s-interior" class="screen">
+    <div class="progress-bar" id="p-interior"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">🗄️</div>
+      <div>
+        <h2 class="stop-title">Interior tour</h2>
+        <p class="stop-intro">Let's walk through the living space — drawers, cabinets, and the two things that surprise people most: push-to-lock slides and the electromagnet drawer system.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🗄️</span> Drawers &amp; cabinets</div>
+      <div class="card-body">Your build has its own layout, but most vans include a mix of standard pull drawers, overhead storage, and a few hidden compartments. Some drawers have soft-close slides, others have push-to-lock.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">👆</span> Push-to-lock drawer slides</div>
+      <div class="card-body">
+        Some drawers — typically the hidden ones — use push-to-lock slides instead of handles. Push the drawer closed until you feel it click, and it locks in place. To open, push in again and it releases. No handle, no latch, just a push.
+        <div class="callout ok"><span class="ci">✓</span> Once you know the location, these hidden drawers disappear seamlessly into the cabinetry.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🧲</span> Electromagnet drawer locks</div>
+      <div class="card-body">
+        Some drawers are held closed by electromagnets that engage automatically when the van's ignition is on. This keeps things from sliding open while you're driving. When you turn the ignition off, the magnets release and the drawers open normally.
+        <div class="callout info"><span class="ci">i</span> There's a dedicated switch that breaks the magnet connection — so if you need to access those drawers while the engine is running, flip that switch and the magnets disengage.</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-charging')">← Charging</button>
+      <button class="btn-next" onclick="go('s-controls')">Main controls →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ CONTROLS ════════════════════════════════ -->
+  <div id="s-controls" class="screen">
+    <div class="progress-bar" id="p-controls"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">🎛️</div>
+      <div>
+        <h2 class="stop-title">Main controls</h2>
+        <p class="stop-intro">Your control panel is the command center of the van. Depending on your build you'll have a Webasto SmarTemp controller, a Victron inverter switch, a Cerbo GX touchscreen — or a combination.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔥</span> Webasto heater controller</div>
+      <div class="card-body">
+        The Webasto SmarTemp 3.0 controls your air heater. Turn on and set your desired temperature — the heater does the rest. It pulls fuel directly from the van's own tank, so whether your vehicle runs on diesel or gas, the heater uses that same fuel. No separate tank to manage.
+        <div class="callout tip"><span class="ci">!</span> When you turn it off, let it finish its cool-down cycle before cutting power. The fan needs to run for a few minutes to protect the internals.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔀</span> Inverter — three modes</div>
+      <div class="card-body">
+        Your Victron inverter has three positions. This is one of the most important things to understand in the whole van:
+        <div class="mode-table">
+          <div class="mode-row">
+            <span class="mode-pill mp-on">ON</span>
+            <span class="mode-desc">Battery powers all 110V outlets and appliances. Use this when off-grid or not plugged in. Microwave, cooktop, AC, and water heater all work.</span>
+          </div>
+          <div class="mode-row" style="border-color:#B8DFC9">
+            <span class="mode-pill mp-co">Charger Only</span>
+            <span class="mode-desc">Shore power runs your outlets and charges the battery. The battery itself is not used to power 110V loads. Use this when plugged in.</span>
+          </div>
+          <div class="mode-row">
+            <span class="mode-pill mp-off">OFF</span>
+            <span class="mode-desc">No 110V outlets. Only 12V systems work — lights, fans, USB ports, the heater. Use for storage or to conserve battery.</span>
+          </div>
+        </div>
+        <div class="callout ok" style="margin-top:12px"><span class="ci">✓</span> Simple rule: plugged in → Charger Only. Off-grid → ON. Storing the van → OFF.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📺</span> Cerbo GX touchscreen (if equipped)</div>
+      <div class="card-body">
+        Some builds have a Cerbo GX touchscreen instead of (or alongside) a physical inverter switch. It shows a live overview of your whole electrical system — battery SOC, solar input, shore power status, and inverter mode — all in one place. You can also switch inverter modes directly from the screen.
+        <div class="callout info"><span class="ci">i</span> Which control setup you have depends on your specific build. Your in-person walkthrough will cover exactly what's in your van.</div>
+      </div>
+    </div>
+
+    <a class="notion-link" href="https://app.notion.com/p/3531bfd4f75d8080a281e1808c2434eb" target="_blank">↗ Inverter / Power Modes — full guide in Notion</a>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-interior')">← Interior tour</button>
+      <button class="btn-next" onclick="go('s-plumbing')">Plumbing →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ PLUMBING ════════════════════════════════ -->
+  <div id="s-plumbing" class="screen">
+    <div class="progress-bar" id="p-plumbing"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">💧</div>
+      <div>
+        <h2 class="stop-title">Plumbing system</h2>
+        <p class="stop-intro">Your van has a complete fresh and grey water system. Here's how to fill it, use it, and find all the controls — which are split across two locations.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🪣</span> Filling the fresh water tank</div>
+      <div class="card-body">
+        The fill port is located inside the plumbing cabinet at the rear of the van — open the cabinet door and connect your hose there. Use a clean potable water hose only, as regular garden hoses can leach chemicals into your water supply.
+        <div class="callout ok"><span class="ci">✓</span> The fresh tank has an overflow — even if you overfill it, water drains outside the van rather than inside. No stress.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">👁️</span> Checking your water level</div>
+      <div class="card-body">There's a cutout in the plumbing cabinet door that lets you see directly into the tank area — no gauge, no glass. Just open the cabinet and look through the cutout to get a quick visual read on how much water you have.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔩</span> Water filter &amp; push-to-connect fittings</div>
+      <div class="card-body">Your system includes an inline water filter — all water passes through it before reaching your fixtures. The fittings throughout are push-to-connect with anti-drip, meaning they're tool-free and won't drip when disconnected. Makes filter swaps and winterizing simple.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔘</span> Plumbing switches — two locations</div>
+      <div class="card-body">
+        <div class="loc-table">
+          <div class="loc-row">
+            <span class="loc-label">Water pump<br>Grey tank valves</span>
+            <span class="loc-desc">Inside the kitchen cabinet behind the trash door. Pump on/off and grey tank valve controls are both here.</span>
+          </div>
+          <div class="loc-row">
+            <span class="loc-label">Fresh tank dump valve</span>
+            <span class="loc-desc">Inside the rear plumbing cabinet — same door as the water fill port and level cutout.</span>
+          </div>
+        </div>
+        <div class="callout tip"><span class="ci">!</span> Always turn the pump OFF when leaving the van. Running it dry causes damage.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🚿</span> Using the fixtures</div>
+      <div class="card-body">Turn the pump ON before using any water. Open a faucet and the pump pressurizes the lines. Turn it OFF when you're done. Hot and cold controls work as you'd expect — just make sure the pump is on first.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">⏱️</span> Water heater — on a timer</div>
+      <div class="card-body">
+        The water heater switch turns on the heating element, but it runs on a timer so it won't stay on and drain your battery. Flip it on a few minutes before you need hot water — it'll time out automatically.
+        <div class="callout ok"><span class="ci">✓</span> No need to remember to turn it off — the timer handles that for you.</div>
+      </div>
+    </div>
+
+    <a class="notion-link" href="https://app.notion.com/p/3531bfd4f75d8080a58ff68a946e037f" target="_blank">↗ Water System — full guide in Notion</a>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-controls')">← Main controls</button>
+      <button class="btn-next" onclick="go('s-electrical')">Electrical cabinet →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ ELECTRICAL ════════════════════════════════ -->
+  <div id="s-electrical" class="screen">
+    <div class="progress-bar" id="p-electrical"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">🔌</div>
+      <div>
+        <h2 class="stop-title">Electrical cabinet</h2>
+        <p class="stop-intro">This is where all the electrical components live — the brain of the system. You won't need to come in here often, but it's good to know what's inside.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">👁️</span> What's inside</div>
+      <div class="card-body">The electrical cabinet houses your Victron components — MultiPlus inverter/charger, MPPT solar charge controller, SmartShunt, and Orion DC-DC charger — along with your fuse block and WFCO breaker panel.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🛑</span> You mostly won't need to touch this</div>
+      <div class="card-body">
+        The system runs itself. The two situations where you might need to open this cabinet:
+        <div class="checklist" style="margin-top:10px">
+          <div class="check-item"><span class="check">✓</span> Check or replace a fuse if something suddenly stops working</div>
+          <div class="check-item"><span class="check">✓</span> Reset a tripped breaker on the WFCO panel</div>
+        </div>
+        <div class="callout ok" style="margin-top:10px"><span class="ci">✓</span> If something isn't working, the breaker panel is the first place to look — a tripped breaker is the most common cause and the easiest fix.</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-plumbing')">← Plumbing</button>
+      <button class="btn-next" onclick="go('s-app')">Phone setup →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ APP ════════════════════════════════ -->
+  <div id="s-app" class="screen">
+    <div class="progress-bar" id="p-app"></div>
+    <div class="stop-header">
+      <div class="stop-icon-wrap">📱</div>
+      <div>
+        <h2 class="stop-title">Connect your phone</h2>
+        <p class="stop-intro">The last thing we do at every delivery — get VictronConnect on your phone so you can see exactly what your battery is doing, anytime.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📲</span> Step 1 — download VictronConnect</div>
+      <div class="card-body">Search for <strong>VictronConnect</strong> in the App Store or Google Play and install it. It's free. This app is your window into the whole electrical system.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📶</span> Step 2 — connect to the SmartShunt</div>
+      <div class="card-body">
+        Open VictronConnect and it will scan for nearby Victron devices via Bluetooth. Tap the SmartShunt to connect. The default PIN is <strong>000000</strong> if prompted.
+        <div class="callout info"><span class="ci">i</span> You may see multiple Victron devices — SmartShunt, MPPT, Orion. Connect to the SmartShunt first for battery status.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> Step 3 — what you'll see</div>
+      <div class="card-body">
+        Once connected you'll see your battery state of charge as a percentage, voltage, and live amps flowing in or out. Positive amps = charging. Negative = discharging.
+        <div class="callout ok"><span class="ci">✓</span> Connect to the MPPT separately to see live solar input wattage. Both are worth bookmarking in the app.</div>
+      </div>
+    </div>
+
+    <div class="finish-card">
+      <div class="finish-title">That's the walkthrough.</div>
+      <div class="finish-body">You now know everything we cover at delivery. See you soon — and the full owner guide is always there if you want to go deeper on any system before you arrive.</div>
+      <div class="finish-actions">
+        <button class="btn-secondary" onclick="go('s-welcome')">← Start over</button>
+        <a class="btn-secondary" href="https://app.notion.com/p/3531bfd4f75d804f8060e36c0ce5f138" target="_blank">↗ Full owner guide</a>
+      </div>
+    </div>
+
+    <p class="support-note">Questions? <a href="http://www.readysetvan.com/support">readysetvan.com/support</a></p>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="go('s-electrical')">← Electrical cabinet</button>
+      <span></span>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+  const stops  = ['explore','cab','charging','interior','controls','plumbing','electrical','app'];
+  const labels = ['Get familiar','Cab & seats','Charging','Interior tour','Main controls','Plumbing','Electrical','Phone setup'];
+
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const key = id.replace('s-', '');
+    const idx = stops.indexOf(key);
+    if (idx < 0) return;
+
+    const el = document.getElementById('p-' + key);
+    if (!el) return;
+    el.innerHTML = '';
+
+    stops.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'prog-dot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+      el.appendChild(d);
+    });
+
+    const lbl = document.createElement('span');
+    lbl.className = 'prog-label';
+    lbl.textContent = (idx + 1) + ' of ' + stops.length + ' — ' + labels[idx];
+    el.appendChild(lbl);
+  }
+</script>
+</body>
+</html>
